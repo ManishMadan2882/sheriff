@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js --ignore dist"
   },
   "dependencies": {
     "@xenova/transformers": "^2.17.1",
