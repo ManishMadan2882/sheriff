@@ -36,6 +36,7 @@ app.use(cors({
   method:"GET, PUT, POST, DELETE",
   credentials:true
 }))
+app.use(express.json())
 app.use(passport.initialize());
 app.use(passport.authenticate("session"));
 
@@ -152,16 +153,29 @@ app.get('/my-repos', async(req, res) => {
     }} catch(error){
       console.log(error)
     }
+});
+
+app.get("/synced-repos",async(req,res,next)=>{
+  console.log(req.session)
+  if(req.session?.passport){
+    const username = req.session?.passport.user.username;
+    const user = await User.findOne({username})
+    const data = await Repo.find({user:user._id})
+    res.status(200).json({success:true,data})
+  } else{
+    res.status(404).json({success:false,data:[]})
+  }
 })
 
 
 app.post("/checkoutCode", async (req, res) => {
   const { repoUrl } = req.body;
+  console.log("----",req.body)
   if (!repoUrl) {
     return res.status(400).send("Repository URL is required.");
   }
 
-  const username = req.session.passport.user.username;
+  const username = req.session?.passport.user.username;
   const user = await User.findOne({username})
 
   let repo = await Repo.findOne({url: repoUrl})
@@ -182,7 +196,7 @@ app.post("/checkoutCode", async (req, res) => {
   const repoPath = path.join(destinationFolder, repoName);
 
   const cloneCommand = `git clone ${repoUrl} ${repoPath}`;
-
+console.log(cloneCommand)
   exec(cloneCommand, async (error, stdout, stderr) => {
     if (error) {
       console.error(`Error cloning repository: ${error.message}`);
@@ -195,7 +209,7 @@ app.post("/checkoutCode", async (req, res) => {
     // console.log(repoPath);
     // const output = await checker(`${repoPath}/backend/package.json`);
     // console.log(output);
-    fs.rmdirSync(repoPath, { recursive: true });
+    //fs.rmdirSync(repoPath, { recursive: true });
 
     res.status(200).json( {success: true,data: repo})
   });

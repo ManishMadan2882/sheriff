@@ -1,4 +1,3 @@
-import React from 'react'
 import redirectIcon from '../assets/redirect.png'
 const Profile = () => {
     return (
