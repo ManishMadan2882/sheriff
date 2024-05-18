@@ -30,7 +30,11 @@ app.use(
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 },
   })
 );
-
+app.use(cors({
+  origin:"http://localhost:5173",
+  method:"GET, PUT, POST, DELETE",
+  credentials:true
+}))
 app.use(passport.initialize());
 app.use(passport.authenticate("session"));
 
@@ -43,6 +47,7 @@ passport.use(
     },
     async function (accessToken, refreshToken, profile, done) {
       console.log(accessToken);
+      console.log('refresh',refreshToken)
       console.log(profile);
 
       //   const res = await fetch(
@@ -119,31 +124,35 @@ app.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/fail" }),
   function (req, res) {
-    res.redirect("/success");
+    res.redirect("http://localhost:5173");
   }
 );
 
-app.get("/success", async (req, res) => {
-  console.log(req.session);
-  const username = req.session.passport.user.username;
-  const user = await User.findOne({ username: username });
+app.get('/my-repos', async(req, res) => {
+  console.log(req?.session)
+  try{
+    console.log(req.session)
+    const username = req.session.passport.user.username;
+    const user = await User.findOne({ username: username });
+    
+    if (user) {
+      console.log;
+      const result = await fetch(
+        `https://api.github.com/users/${user.username}/repos`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        }
+      );
+      const data = await result.json();
+      console.log(data);
+      return res.status(200).json({ data: data });
+    }} catch(error){
+      console.log(error)
+    }
+})
 
-  if (user) {
-    console.log;
-    const result = await fetch(
-      `https://api.github.com/users/${user.username}/repos`,
-      {
-        headers: {
-          Authorization: `Bearer ${user.accessToken}`,
-        },
-      }
-    );
-    const data = await result.json();
-    console.log(data);
-    return res.status(200).json({ data: data });
-  }
-  return res.status(404).json("Error");
-});
 
 app.post("/checkoutCode", async (req, res) => {
   const { repoUrl } = req.body;
