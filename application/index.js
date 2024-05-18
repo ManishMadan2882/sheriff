@@ -35,13 +35,17 @@ passport.use(
       console.log("hello");
       console.log(accessToken);
       console.log(profile);
-      const res = await fetch("https://api.github.com/user/emails", {
-        headers: {
-          Authorization: `token ${accessToken}`,
-        },
-      });
+
+      const res = await fetch(
+        `https://api.github.com/users/${profile.login}/repos`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       const data = await res.json();
-      console.log(data);
+      //   console.log(data);
       //   const primaryEmail = data.find((item) => item.primary === true);
     }
   )
@@ -67,7 +71,7 @@ app.get("/", (req, res) => {
 
 app.get(
   "/auth/github",
-  passport.authenticate("github", { scope: ["user:email"] })
+  passport.authenticate("github", { scope: ["user:email", "user", "repo"] })
 );
 
 app.get(
