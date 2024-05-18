@@ -197,7 +197,7 @@ const uploadDirectory = async (directoryPath, bucketName, keyPrefix) => {
 
 app.post("/checkoutCode", async (req, res) => {
   const { repoUrl } = req.body;
-  const username  = req.session?.passport.user.username;
+  const username = req.session?.passport.user.username;
 
   if (!repoUrl) {
     return res.status(400).send("Repository URL is required.");
@@ -215,7 +215,7 @@ app.post("/checkoutCode", async (req, res) => {
   // const username = req.session.passport.user.username;
   const user = await User.findOne({ username });
   let repo = await Repo.findOne({ url: repoUrl });
-  console.log(user)
+  console.log(user);
   if (!repo) {
     repo = await Repo.create({
       url: repoUrl,
@@ -279,24 +279,46 @@ const convertToJSON = (input) => {
 
   return result;
 };
-app.get('/synced-repos', async(req,res)=>{
-    try{
-      const username = req.session.passport.user.username;
-      const user = await User.findOne({username})
-      if(!user){
-        return res.json({success:false})
+app.get("/synced-repos", async (req, res) => {
+  try {
+    const username = req.session.passport.user.username;
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.json({ success: false });
+    }
+    const repos = await Repo.find({
+      user: user._id,
+    });
+    res.status(200).json({ data: repos, success: true });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+    });
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    const username = req.session?.passport?.user?.username;
+    if (username) {
+      const user = await User.findOne({ username });
+      if (user) {
+        return res.status(200).json({ success: true, data: user });
       }
-      const repos = await Repo.find({
-        user:user._id
-      })
-      res.status(200).json({data:repos,success:true})
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
-    catch(err){
-      res.status(500).json({
-        success:false
-      })
-    }
-})
+    return res
+      .status(400)
+      .json({ success: false, message: "User not authenticated" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+});
+
 app.get("/get-analysis", async (req, res) => {
   fs.readFile(__dirname + "/output.txt", "utf8", async (err, data) => {
     if (err) {
@@ -311,8 +333,6 @@ app.get("/get-analysis", async (req, res) => {
       data: convertToJSON(data),
     });
   });
-
-
 });
 
 app.listen(port, () => console.log("Server is running at " + port));
