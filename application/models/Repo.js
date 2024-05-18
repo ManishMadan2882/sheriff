@@ -7,7 +7,7 @@ const repoSchema = new mongoose.Schema(
       ref: "User",
     },
     status: {
-      type: boolean,
+      type: Boolean,
       required: true,
       default: false
     },
