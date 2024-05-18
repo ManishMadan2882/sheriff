@@ -3,6 +3,10 @@ const cors = require("cors");
 const dbStart = require("./database/mongo");
 const dotenv = require("dotenv");
 const User = require("./models/User");
+const fs = require("fs");
+const path = require("path");
+const { exec } = require("child_process");
+const checker = require("./scripts/dependencyCheck");
 
 var GitHubStrategy = require("passport-github2").Strategy;
 var passport = require("passport");
@@ -139,6 +143,48 @@ app.get("/success", async (req, res) => {
     return res.status(200).json({ data: data });
   }
   return res.status(404).json("Error");
+});
+
+app.post("/checkoutCode", async (req, res) => {
+  const { repoUrl } = req.body;
+  if (!repoUrl) {
+    return res.status(400).send("Repository URL is required.");
+  }
+
+  const destinationFolder = path.join(__dirname, "dist");
+  if (!fs.existsSync(destinationFolder)) {
+    fs.mkdirSync(destinationFolder);
+  }
+
+  console.log(destinationFolder);
+
+  const repoName = path.basename(repoUrl, ".git");
+  const repoPath = path.join(destinationFolder, repoName);
+
+  console.log(repoPath);
+
+  const cloneCommand = `git clone ${repoUrl} ${repoPath}`;
+
+  console.log(cloneCommand);
+
+  exec(cloneCommand, async (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error cloning repository: ${error.message}`);
+      return res.status(500).send(`Error cloning repository: ${error.message}`);
+    }
+
+    if (stderr) {
+      console.error(`Standard error: ${stderr}`);
+    }
+    console.log(repoPath);
+    const output = await checker(`${repoPath}/backend/package.json`);
+    console.log(output);
+    fs.rmdirSync(repoPath, { recursive: true });
+
+    res.send(
+      `Repository ${repoName} has been successfully cloned into ${destinationFolder}.`
+    );
+  });
 });
 
 app.listen(port, () => console.log("Server is running at " + port));
