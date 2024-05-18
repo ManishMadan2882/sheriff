@@ -196,8 +196,8 @@ const uploadDirectory = async (directoryPath, bucketName, keyPrefix) => {
 };
 
 app.post("/checkoutCode", async (req, res) => {
-  const { repoUrl } = req.body;
-  const username = req.session?.passport.user.username;
+  const { repoUrl, username } = req.body;
+  // const username = req.session?.passport.user.username;
 
   if (!repoUrl) {
     return res.status(400).send("Repository URL is required.");
@@ -257,14 +257,29 @@ app.post("/checkoutCode", async (req, res) => {
 });
 
 app.get("/run-analysis/:id", async (req, res) => {
-  const { id } = req.params;
-  const repo = await Repo.findById(id);
+  try {
+    const { id } = req.params;
 
-  console.log(repo);
+    if (id) {
+      const repo = await Repo.findById(id);
 
-  if (repo) {
-    await checker(repo.path);
-    res.status(200).json({ success: true });
+      if (repo) {
+        await checker(repo.path);
+        return res.status(200).json({ success: true });
+      } else {
+        return res
+          .status(404)
+          .json({ success: true, message: "Repository not found" });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "params not present" });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 });
 
@@ -279,17 +294,23 @@ const convertToJSON = (input) => {
 
   return result;
 };
+
 app.get("/synced-repos", async (req, res) => {
   try {
     const username = req.session.passport.user.username;
     const user = await User.findOne({ username });
+
     if (!user) {
-      return res.json({ success: false });
+      return res.status(404).json({ success: false });
     }
     const repos = await Repo.find({
       user: user._id,
     });
-    res.status(200).json({ data: repos, success: true });
+
+    if (repos) {
+      return res.status(200).json({ data: repos, success: true });
+    }
+    return res.status(404).json({ success: false });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -300,6 +321,7 @@ app.get("/synced-repos", async (req, res) => {
 app.get("/profile", async (req, res) => {
   try {
     const username = req.session?.passport?.user?.username;
+
     if (username) {
       const user = await User.findOne({ username });
       if (user) {
@@ -320,19 +342,37 @@ app.get("/profile", async (req, res) => {
 });
 
 app.get("/get-analysis", async (req, res) => {
-  fs.readFile(__dirname + "/output.txt", "utf8", async (err, data) => {
-    if (err) {
-      console.log(err);
+  try {
+    const outPath = path.join(__dirname, "output.txt");
+    const dirPath = path.join(__dirname, "dist");
+
+    if (fs.existsSync(outPath)) {
+      const data = await fs.promises.readFile(outPath, "utf8");
+
+      if (fs.existsSync(dirPath)) {
+        await fs.promises.rm(dirPath, { recursive: true, force: true });
+      }
+
+      await fs.promises.rm(outPath);
+
+      return res.status(200).json({
+        success: true,
+        data: convertToJSON(data),
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
     }
-
-    // fs.rmdirSync(__dirname, "/dist", {recursive: true});
-    // fs.rmSync(__dirname, '/output.txt')
-
-    return res.status(200).json({
-      success: true,
-      data: convertToJSON(data),
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: err,
     });
-  });
+  }
 });
 
 app.listen(port, () => console.log("Server is running at " + port));
