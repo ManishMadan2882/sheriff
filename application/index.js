@@ -196,7 +196,9 @@ const uploadDirectory = async (directoryPath, bucketName, keyPrefix) => {
 };
 
 app.post("/checkoutCode", async (req, res) => {
-  const { repoUrl, username } = req.body;
+  const { repoUrl } = req.body;
+  const username  = req.session?.passport.user.username;
+
   if (!repoUrl) {
     return res.status(400).send("Repository URL is required.");
   }
@@ -213,7 +215,7 @@ app.post("/checkoutCode", async (req, res) => {
   // const username = req.session.passport.user.username;
   const user = await User.findOne({ username });
   let repo = await Repo.findOne({ url: repoUrl });
-
+  console.log(user)
   if (!repo) {
     repo = await Repo.create({
       url: repoUrl,
@@ -238,12 +240,12 @@ app.post("/checkoutCode", async (req, res) => {
     }
 
     try {
-      // await uploadDirectory(
-      //   repoPath,
-      //   process.env.BUCKET_NAME,
-      //   `__outputs/${slug}`
-      // );
-      // console.log(`Successfully uploaded the repository to S3.`);
+      await uploadDirectory(
+        repoPath,
+        process.env.BUCKET_NAME,
+        `__outputs/${slug}`
+      );
+      console.log(`Successfully uploaded the repository to S3.`);
       res.status(200).json({ success: true, data: repo });
     } catch (uploadError) {
       console.error(`Error uploading directory: ${uploadError.message}`);
@@ -258,7 +260,7 @@ app.get("/run-analysis/:id", async (req, res) => {
   const { id } = req.params;
   const repo = await Repo.findById(id);
 
-  console.log(repo.path);
+  console.log(repo);
 
   if (repo) {
     await checker(repo.path);
@@ -277,18 +279,40 @@ const convertToJSON = (input) => {
 
   return result;
 };
-
+app.get('/synced-repos', async(req,res)=>{
+    try{
+      const username = req.session.passport.user.username;
+      const user = await User.findOne({username})
+      if(!user){
+        return res.json({success:false})
+      }
+      const repos = await Repo.find({
+        user:user._id
+      })
+      res.status(200).json({data:repos,success:true})
+    }
+    catch(err){
+      res.status(500).json({
+        success:false
+      })
+    }
+})
 app.get("/get-analysis", async (req, res) => {
   fs.readFile(__dirname + "/output.txt", "utf8", async (err, data) => {
     if (err) {
       console.log(err);
     }
 
+    // fs.rmdirSync(__dirname, "/dist", {recursive: true});
+    // fs.rmSync(__dirname, '/output.txt')
+
     return res.status(200).json({
       success: true,
       data: convertToJSON(data),
     });
   });
+
+
 });
 
 app.listen(port, () => console.log("Server is running at " + port));

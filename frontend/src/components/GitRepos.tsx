@@ -124,7 +124,15 @@ const GitRepos = () => {
                                             </button>
                                         </div>
                                     </div>
-                                    <button className='bg-gray-800 hover:bg-gray-800 px-2 py-1 my-6 rounded-3xl'>Run dependency analysis</button>
+                                    <button 
+                                    onClick={()=>{
+                                        fetch(`${host}/run-analysis/${elem._id}`)
+                                        .then(res => res.json())
+                                        .then((data:any)=>{
+                                            
+                                        })
+                                    }}  
+                                    className='bg-gray-800 hover:bg-gray-800 px-2 py-1 my-6 rounded-3xl'>Run dependency analysis</button>
                                     <p className='text-sm mt-2'>
                                         Last Sync
                                         {' '+timeline+' '}
