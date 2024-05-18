@@ -1,6 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Germania+One&family=Roboto+Slab:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 html{
-  background-color: #222327;
+  --tw-bg-opacity: 1;
+    background-color: #000900;
+}
+.metallic-gradient {
+  background-image: linear-gradient(
+    113.96deg,
+    rgba(255, 231, 231, 0.46) 0%,
+    rgba(255, 255, 255, 0.47) 7.3%,
+    rgba(0, 0, 0, 0) 23.96%,
+    rgba(255, 255, 255, 0.3) 57.81%,
+    rgba(115, 129, 255, 0.45) 81.28%,
+    rgba(0, 7, 73, 0.31) 100%
+  );
+}
+.germania-one-regular {
+  font-family: "Germania One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+.roboto-slab {
+  font-family: "Roboto Slab", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+.space-grotesk {
+  font-family: "Space Grotesk", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
