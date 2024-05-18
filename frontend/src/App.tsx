@@ -8,6 +8,16 @@ import Report from "./pages/Report"
 const host = import.meta.env.VITE_DOMAIN
 export default function App() {
   const [repos,setRepos]=useState<any>()
+  const [profile,setProfile] = useState<any>(null);
+  const getProfile = ()=>{
+    fetch(`${host}/profile`,{
+      credentials:"include"
+    })
+    .then(res=>res.json())
+    .then((data:any) => {
+      setProfile(data)
+    })
+  }
   useEffect(() => {
     fetch(`${host}/my-repos`, {
       method: 'GET',
@@ -21,6 +31,7 @@ export default function App() {
       .catch((err) => {
         console.log(err);
       })
+      getProfile();
   }, [])
   return (
     <>
@@ -31,12 +42,12 @@ export default function App() {
         {/* ultramarine glow */}
       </div>
       <div className="w-screen">
-        <Nav />
+        <Nav profile={profile}/>
         <div className="m-6 justify-center flex">
           <div className="max-w-screen-2xl">
             <BrowserRouter>
               <Routes>
-                <Route path="/dashboard" element={<Dashboard/>} />
+                <Route path="/dashboard" element={<Dashboard profile={profile}/>} />
                 <Route path="/import" element={<ImportTable repos={repos}/>} />
                 <Route path="/stats" element={<Stats/>}/>
                 <Route path="/report/:id" element={<Report/>}/>

@@ -269,7 +269,7 @@ app.get("/run-analysis/:id", async (req, res) => {
 });
 
 const convertToJSON = (input) => {
-  const lines = input.trim().split("\n");
+  const lines = input ? input.trim().split("\n") : [];
   const result = {};
 
   lines.forEach((line) => {

@@ -83,7 +83,7 @@ const GitRepos = () => {
 
             <button onClick={() => navigate('/import')} className='float-right rounded-md text-silver mt-8 px-2 py-1 bg-[#3b60e4] hover:bg-sky-700 transition duration-500'>Import</button>
             <div className='w-full justify-center flex'>
-                {(syncedRepos?.data.length === 0) && <div className='flex justify-center text-white'>
+                {(syncedRepos?.data?.length === 0) && <div className='flex justify-center text-white'>
                     No data found
                     {/* <img src={disconnected} alt='no data to show' width={40} height={36} /> */}
                 </div>}
@@ -92,8 +92,8 @@ const GitRepos = () => {
                     {syncedRepos?.data?.map((elem: any) => {
                         const splittedUrl = elem.url.split('/');
                         const timeline = moment(elem.updatedAt).fromNow();
-                        const name = (splittedUrl[splittedUrl.length - 2] + '/' + splittedUrl[splittedUrl.length - 1]).split('.')[0];
-                        const repo_name = splittedUrl[splittedUrl.length - 1].split('.')[0]
+                        const name = (splittedUrl[splittedUrl?.length - 2] + '/' + splittedUrl[splittedUrl?.length - 1]).split('.')[0];
+                        const repo_name = splittedUrl[splittedUrl?.length - 1].split('.')[0]
                         return (
                             <div className='metallic-gradient p-[1px] rounded-lg'>
                                 <div className='shadow-sm shadow-slate-800 w-96 p-6 h-full rounded-lg bg-chinese-black'>
