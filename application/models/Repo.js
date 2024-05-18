@@ -9,11 +9,14 @@ const repoSchema = new mongoose.Schema(
     status: {
       type: Boolean,
       required: true,
-      default: false
+      default: false,
     },
     url: {
       type: String,
       unique: true,
+    },
+    path: {
+      type: String,
     },
   },
   { timestamps: true }

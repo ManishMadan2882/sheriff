@@ -6,7 +6,7 @@ const app = express();
 
 const port = 5201;
 
-app.get("/pushToS3", (req, res) => {
+app.post("/pushToS3", (req, res) => {
   docker
     .createContainer({
       Image: "ubuntu",

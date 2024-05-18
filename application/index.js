@@ -201,25 +201,26 @@ app.post("/checkoutCode", async (req, res) => {
     return res.status(400).send("Repository URL is required.");
   }
 
+  const destinationFolder = path.join(__dirname, "dist");
+  if (!fs.existsSync(destinationFolder)) {
+    fs.mkdirSync(destinationFolder);
+  }
+  const repoName = path.basename(repoUrl, ".git");
+  const repoPath = path.join(destinationFolder, repoName);
+
+  console.log(repoPath);
+
   // const username = req.session.passport.user.username;
   const user = await User.findOne({ username });
-
   let repo = await Repo.findOne({ url: repoUrl });
 
   if (!repo) {
     repo = await Repo.create({
       url: repoUrl,
       user: user._id,
+      path: repoPath,
     });
   }
-
-  const destinationFolder = path.join(__dirname, "dist");
-  if (!fs.existsSync(destinationFolder)) {
-    fs.mkdirSync(destinationFolder);
-  }
-
-  const repoName = path.basename(repoUrl, ".git");
-  const repoPath = path.join(destinationFolder, repoName);
 
   const cloneCommand = `git clone ${repoUrl} ${repoPath}`;
 
@@ -237,22 +238,56 @@ app.post("/checkoutCode", async (req, res) => {
     }
 
     try {
-      await uploadDirectory(
-        repoPath,
-        process.env.BUCKET_NAME,
-        `__outputs/${slug}`
-      );
-      console.log(`Successfully uploaded the repository to S3.`);
+      // await uploadDirectory(
+      //   repoPath,
+      //   process.env.BUCKET_NAME,
+      //   `__outputs/${slug}`
+      // );
+      // console.log(`Successfully uploaded the repository to S3.`);
+      res.status(200).json({ success: true, data: repo });
     } catch (uploadError) {
       console.error(`Error uploading directory: ${uploadError.message}`);
       return res
         .status(500)
         .send(`Error uploading directory: ${uploadError.message}`);
-    } finally {
-      fs.rmdirSync(repoPath, { recursive: true });
+    }
+  });
+});
+
+app.get("/run-analysis/:id", async (req, res) => {
+  const { id } = req.params;
+  const repo = await Repo.findById(id);
+
+  console.log(repo.path);
+
+  if (repo) {
+    await checker(repo.path);
+    res.status(200).json({ success: true });
+  }
+});
+
+const convertToJSON = (input) => {
+  const lines = input.trim().split("\n");
+  const result = {};
+
+  lines.forEach((line) => {
+    const [package, cves] = line.split(":");
+    result[package] = cves.split(",");
+  });
+
+  return result;
+};
+
+app.get("/get-analysis", async (req, res) => {
+  fs.readFile(__dirname + "/output.txt", "utf8", async (err, data) => {
+    if (err) {
+      console.log(err);
     }
 
-    res.status(200).json({ success: true, data: repo });
+    return res.status(200).json({
+      success: true,
+      data: convertToJSON(data),
+    });
   });
 });
 

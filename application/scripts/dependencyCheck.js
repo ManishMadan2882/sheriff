@@ -2,7 +2,8 @@ const { default: axios } = require("axios");
 const fs = require("fs");
 
 const checkDependenciesForVulnerabilities = async (packageJsonPath) => {
-  fs.readFile(packageJsonPath, "utf8", async (err, data) => {
+  console.log(packageJsonPath + "/package.json");
+  fs.readFile(packageJsonPath + "/package.json", "utf8", async (err, data) => {
     if (err) {
       console.error("Error reading package.json:", err);
       return;
@@ -13,12 +14,12 @@ const checkDependenciesForVulnerabilities = async (packageJsonPath) => {
         ...packageJson.dependencies,
         ...packageJson.devDependencies,
       };
-
+      console.log(dependencies);
       const packageMap = new Map(Object.entries(dependencies));
       packageMap.forEach((value, key) => {
         packageMap.set(key, value.replace("^", ""));
       });
-
+      console.log("---", packageMap);
       const cvePromises = Array.from(packageMap.entries()).map(
         async ([key, value]) => {
           try {
@@ -59,13 +60,13 @@ const checkDependenciesForVulnerabilities = async (packageJsonPath) => {
         }
       });
       const outputPath = (__dirname, "output.txt");
-
+      console.log("^^^", mapp);
       let outputString = "";
       mapp.forEach((value, key) => {
         outputString += `${key}:${value}\n`;
       });
 
-      fs.writeFile(outputPath, outputString, "utf8", (err) => {
+      fs.writeFileSync(outputPath, outputString, "utf8", (err) => {
         if (err) {
           console.error("Error writing to output.txt:", err);
         } else {
