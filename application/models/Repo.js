@@ -9,6 +9,7 @@ const repoSchema = new mongoose.Schema(
     status: {
       type: boolean,
       required: true,
+      default: false
     },
     url: {
       type: String,

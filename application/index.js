@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
 const checker = require("./scripts/dependencyCheck");
+const Repo = require("./models/Repo")
 
 var GitHubStrategy = require("passport-github2").Strategy;
 var passport = require("passport");
@@ -160,21 +161,27 @@ app.post("/checkoutCode", async (req, res) => {
     return res.status(400).send("Repository URL is required.");
   }
 
+  const username = req.session.passport.user.username;
+  const user = await User.findOne({username})
+
+  let repo = await Repo.findOne({url: repoUrl})
+
+  if(!repo) {
+    repo = await Repo.create({
+      url:repoUrl,
+      user: user._id
+    })
+  }
+
   const destinationFolder = path.join(__dirname, "dist");
   if (!fs.existsSync(destinationFolder)) {
     fs.mkdirSync(destinationFolder);
   }
 
-  console.log(destinationFolder);
-
   const repoName = path.basename(repoUrl, ".git");
   const repoPath = path.join(destinationFolder, repoName);
 
-  console.log(repoPath);
-
   const cloneCommand = `git clone ${repoUrl} ${repoPath}`;
-
-  console.log(cloneCommand);
 
   exec(cloneCommand, async (error, stdout, stderr) => {
     if (error) {
@@ -185,14 +192,12 @@ app.post("/checkoutCode", async (req, res) => {
     if (stderr) {
       console.error(`Standard error: ${stderr}`);
     }
-    console.log(repoPath);
-    const output = await checker(`${repoPath}/backend/package.json`);
-    console.log(output);
+    // console.log(repoPath);
+    // const output = await checker(`${repoPath}/backend/package.json`);
+    // console.log(output);
     fs.rmdirSync(repoPath, { recursive: true });
 
-    res.send(
-      `Repository ${repoName} has been successfully cloned into ${destinationFolder}.`
-    );
+    res.status(200).json( {success: true,data: repo})
   });
 });
 
