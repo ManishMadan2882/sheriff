@@ -33,7 +33,7 @@ export default function App() {
       <div className="w-screen">
         <Nav />
         <div className="m-6 justify-center flex">
-          <div className="max-w-screen-xl">
+          <div className="max-w-screen-2xl">
             <BrowserRouter>
               <Routes>
                 <Route path="/dashboard" element={<Dashboard/>} />

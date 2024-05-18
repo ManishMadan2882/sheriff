@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import checkmark from '../assets/check.svg'
 import cross from '../assets/error.svg'
+import branch from '../assets/code-branch.svg'
 import { useParams } from 'react-router'
 const host = import.meta.env.VITE_DOMAIN
 const Report = () => {
@@ -33,12 +34,12 @@ const Report = () => {
     }, [])
 
     return (
-        <div className='w-full space-grotesk'>
+        <div className='min-w-max space-grotesk'>
 
             <div className='flex justify-center rounded-md shadow-md w-full metallic-gradient p-[2px]'>
                 <div className=' rounded-md p-4 w-full bg-chinese-black'>
-                    <div className='flex justify-start items-center gap-6'>
-                        {/* <img className='w-32 shadow-lg shadow-slate-black rounded-full' src={'https://avatars.githubusercontent.com/u/96079232?v=4'} /> */}
+                    <div className='flex justify-start w-full items-center gap-6'>
+                        <img className='w-12 filter invert py-2' src={branch} />
                         <div className='flex text-white flex-col w-full p-2'>
                             <h1 className='text-2xl'>algoRythm</h1>
                             <div className='flex justify-start gap-12 my-4'>
