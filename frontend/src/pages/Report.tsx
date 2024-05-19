@@ -4,26 +4,35 @@ import cross from '../assets/error.svg'
 import branch from '../assets/code-branch.svg'
 import { useParams } from 'react-router'
 import { useContext } from 'react'
+import warn from '../assets/exclamation.svg'
 import { DataContext } from '../components/context/RepoSync'
 const host = import.meta.env.VITE_DOMAIN
 const Report = () => {
-    const [repo,setRepo] = useState<any>(null)
+    const [repo, setRepo] = useState<any>(null)
+    const [url, setUrl] = useState('')
     const params = useParams();
     const id = params.id;
+    // console.log(id)
     const [report, setReport] = useState<any>([])
-    const getRepo = ()=>{
-       fetch(`${host}/repo/${id}`)
-       .then((res) => res.json)
-       .then((data)=>{
-        setRepo(data)
-       })
-    }
-    const getDepTest = () => {
-        fetch(`${host}/get-analysis`)
+    const [success, setSuccess] = useState(false)
+    const sliceFromSecondLastSlash = (str: string): string => {
+        const lastSlashIndex = str.lastIndexOf('/');
+        if (lastSlashIndex === -1) return str; // No slashes found
+
+        const secondLastSlashIndex = str.lastIndexOf('/', lastSlashIndex - 1);
+        if (secondLastSlashIndex === -1) return str.slice(lastSlashIndex + 1); // Only one slash found
+
+        return str.slice(secondLastSlashIndex + 1);
+    };
+    const getDepTest = async () => {
+        fetch(`${host}/get-analysis/${id}`)
             .then(res => res.json())
             .then((resjson: any) => {
                 const { data } = resjson;
+                setRepo(resjson?.repo)
+                console.log(resjson)
                 const arr = [];
+                if (!data) return;
                 const keys = Object.keys(data);
                 const vals = Object.values(data);
                 for (let i = 0; i < keys.length; i++) {
@@ -32,15 +41,21 @@ const Report = () => {
                         val: vals[i]
                     });
                 }
+                if (resjson.success) setSuccess(true);
                 console.log(arr);
+                setUrl(resjson.repo.url)
+
+                console.log('repo', resjson?.repo);
 
                 setReport(arr)
 
             })
+            .catch(err => console.log(err)
+            )
     }
+
     useEffect(() => {
         getDepTest();
-        getRepo()
     }, [])
 
     return (
@@ -51,7 +66,7 @@ const Report = () => {
                     <div className='flex justify-start w-full items-center gap-6'>
                         <img className='w-12 filter invert py-2' src={branch} />
                         <div className='flex text-white flex-col w-full p-2'>
-                            <h1 className='text-2xl'>algoRythm</h1>
+                            {repo && <h1 className='text-2xl'>{sliceFromSecondLastSlash(repo?.url)}</h1>}
                             <div className='flex justify-start gap-12 my-4'>
                                 <div>
                                     <span className='text-silver'>Forks:{' '}</span>
@@ -80,8 +95,15 @@ const Report = () => {
                 <h1>Report</h1>
             </div>
             <hr className='border-gun-metal my-6' />
- 
-            {
+
+            {!success ?
+                <div className='bg-chinese-black p-4  flex justify-start text-silver'>
+                    <img src={warn} className='inline mr-4 w-8 h-8  bg-cadmium-orange rounded-3xl' />
+                    <div >
+                        <p>Run the Dependency analysis </p>
+                        <span className='text-xl text-cadmium-orange'>Report not found</span>
+                    </div>
+                </div> :
                 report?.length > 0 ? report?.map((elem: { key: string, val: string[] }, key: number) => {
                     return (<>
                         <div className='bg-chinese-black p-4 flex justify-start text-silver my-2'>

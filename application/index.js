@@ -341,8 +341,16 @@ app.get("/profile", async (req, res) => {
   }
 });
 
-app.get("/get-analysis", async (req, res) => {
+app.get("/get-analysis/:id", async (req, res) => {
   try {
+
+    const {id} = req.params;
+    const repo = await Repo.findById(id)
+
+    if(!repo) {
+      return res.status(200).json({success: true, message: "Repo not available"})
+    }
+
     const outPath = path.join(__dirname, "output.txt");
     const dirPath = path.join(__dirname, "dist");
 
@@ -358,11 +366,13 @@ app.get("/get-analysis", async (req, res) => {
       return res.status(200).json({
         success: true,
         data: convertToJSON(data),
+        repo:repo
       });
     } else {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "File not found",
+        repo:repo
       });
     }
   } catch (err) {

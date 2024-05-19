@@ -7,56 +7,6 @@ import report from '../assets/report.svg'
 import moment from 'moment'
 import { useState } from 'react'
 const host = import.meta.env.VITE_DOMAIN
-/* const data = [
-    {
-        name: "curious-content",
-        url: "curious-content.vercel.app",
-        repo: "ManishMadan2882/curiousCap",
-        commit: "Merged into 'main' into main",
-        desc: "39d ago on main"
-    },
-
-    {
-        name: "curious-content",
-        url: "curious-content.vercel.app",
-        repo: "ManishMadan2882/curiousCap",
-        commit: "Merged into 'main' into main",
-        desc: "39d ago on main"
-    }
-    ,
-
-    {
-        name: "curious-content",
-        url: "curious-content.vercel.app",
-        repo: "ManishMadan2882/curiousCap",
-        commit: "Merged into 'main' into main",
-        desc: "39d ago on main"
-    },
-    {
-        name: "curious-content",
-        url: "curious-content.vercel.app",
-        repo: "ManishMadan2882/curiousCap",
-        commit: "Merged into 'main' into main",
-        desc: "39d ago on main"
-    },
-
-    {
-        name: "curious-content",
-        url: "curious-content.vercel.app",
-        repo: "ManishMadan2882/curiousCap",
-        commit: "Merged into 'main' into main",
-        desc: "39d ago on main"
-    }
-    ,
-
-    {
-        name: "curious-content",
-        url: "curious-content.vercel.app",
-        repo: "ManishMadan2882/curiousCap",
-        commit: "Merged into 'main' into main",
-        desc: "39d ago on main"
-    }
-] */
 const GitRepos = () => {
     const [syncedRepos,setSyncedRepos] = useState<any>()
     const navigate = useNavigate();
