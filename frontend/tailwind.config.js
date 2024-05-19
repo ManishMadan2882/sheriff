@@ -6,6 +6,7 @@ export default {
   ],
   theme: {
     extend: {
+      
       colors:{
         'silver': '#c4c4c4',
         'rainy-gray': '#a4a4a4',

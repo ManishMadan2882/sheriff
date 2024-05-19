@@ -2,6 +2,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer utilities {
+  .delay-150 {
+    animation-delay: 0.15s;
+  }
+  .delay-300 {
+    animation-delay: 0.3s;
+  }
+}
+
 html{
   --tw-bg-opacity: 1;
     background-color: #000900;

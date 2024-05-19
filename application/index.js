@@ -196,8 +196,8 @@ const uploadDirectory = async (directoryPath, bucketName, keyPrefix) => {
 };
 
 app.post("/checkoutCode", async (req, res) => {
-  const { repoUrl, username } = req.body;
-  // const username = req.session?.passport.user.username;
+  const { repoUrl } = req.body;
+  const username = req.session?.passport.user.username;
 
   if (!repoUrl) {
     return res.status(400).send("Repository URL is required.");
@@ -216,7 +216,7 @@ app.post("/checkoutCode", async (req, res) => {
   const user = await User.findOne({ username });
   let repo = await Repo.findOne({ url: repoUrl });
   console.log(user);
-  if (!repo) {
+  if (!repo || !user) {
     repo = await Repo.create({
       url: repoUrl,
       user: user._id,

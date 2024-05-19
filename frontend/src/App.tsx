@@ -5,18 +5,19 @@ import ImportTable from "./pages/Import"
 import { useEffect, useState } from "react"
 import Stats from "./pages/Stats"
 import Report from "./pages/Report"
+import { DataContext, DataProvider } from "./components/context/RepoSync"
 const host = import.meta.env.VITE_DOMAIN
 export default function App() {
-  const [repos,setRepos]=useState<any>()
-  const [profile,setProfile] = useState<any>(null);
-  const getProfile = ()=>{
-    fetch(`${host}/profile`,{
-      credentials:"include"
+  const [repos, setRepos] = useState<any>()
+  const [profile, setProfile] = useState<any>(null);
+  const getProfile = () => {
+    fetch(`${host}/profile`, {
+      credentials: "include"
     })
-    .then(res=>res.json())
-    .then((data:any) => {
-      setProfile(data)
-    })
+      .then(res => res.json())
+      .then((data: any) => {
+        setProfile(data)
+      })
   }
   useEffect(() => {
     fetch(`${host}/my-repos`, {
@@ -31,10 +32,10 @@ export default function App() {
       .catch((err) => {
         console.log(err);
       })
-      getProfile();
+    getProfile();
   }, [])
   return (
-    <>
+    <DataProvider>
       <div className="pointer-events-none absolute top-36 -left-24 z-0  hidden h-[286px] w-[286px] rounded-full bg-purple-x11 blur-3xl lg:block ">
         {/*  purple glow - only for wide screen */}
       </div>
@@ -42,20 +43,22 @@ export default function App() {
         {/* ultramarine glow */}
       </div>
       <div className="w-screen">
-        <Nav profile={profile}/>
+        <Nav profile={profile} />
         <div className="m-6 justify-center flex">
           <div className="max-w-screen-2xl">
             <BrowserRouter>
               <Routes>
-                <Route path="/dashboard" element={<Dashboard profile={profile}/>} />
-                <Route path="/import" element={<ImportTable repos={repos}/>} />
-                <Route path="/stats" element={<Stats/>}/>
-                <Route path="/report/:id" element={<Report/>}/>
+                {profile && profile.success && <>
+                  <Route path="/dashboard" element={<Dashboard profile={profile} />} />
+                  <Route path="/import" element={<ImportTable repos={repos} />} />
+                  <Route path="/stats" element={<Stats />} />
+                  <Route path="/report/:id" element={<Report />} />
+                </>}
               </Routes>
             </BrowserRouter>
           </div>
         </div>
       </div>
-    </>
+    </DataProvider>
   )
 }

@@ -6,7 +6,7 @@ const Profile =({profile}:{profile:any}) => {
             <div className=' rounded-md p-4 w-full bg-chinese-black'>
                 <div className='flex justify-start items-center gap-6'>
                     <img className='w-32 shadow-lg shadow-slate-black rounded-full' src={profile?.data?.avatar} />
-                    <div className='flex text-white flex-col w-full p-2'>
+                    <div className='flex text-white flex-col w-full p-2 flex-wrap'>
                         <h1 className='text-2xl'>{profile?.data.Name}</h1>
                         <div className='flex justify-start gap-12 my-4'>
                             <div>

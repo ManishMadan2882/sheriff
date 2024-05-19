@@ -2,10 +2,10 @@ import React, { useEffect } from 'react'
 import github from '../assets/github-mark-white.png'
 import statIcon from '../assets/stats.svg'
 import branchIcon from '../assets/code-branch.svg'
-import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import report from '../assets/report.svg'
 import moment from 'moment'
+import { useState } from 'react'
 const host = import.meta.env.VITE_DOMAIN
 /* const data = [
     {
@@ -58,7 +58,7 @@ const host = import.meta.env.VITE_DOMAIN
     }
 ] */
 const GitRepos = () => {
-    const [syncedRepos, setSyncedRepos] = useState<any>()
+    const [syncedRepos,setSyncedRepos] = useState<any>()
     const navigate = useNavigate();
     const getMyRepos = () => {
         fetch(`${host}/synced-repos`, {

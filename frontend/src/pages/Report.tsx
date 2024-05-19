@@ -3,12 +3,21 @@ import checkmark from '../assets/check.svg'
 import cross from '../assets/error.svg'
 import branch from '../assets/code-branch.svg'
 import { useParams } from 'react-router'
+import { useContext } from 'react'
+import { DataContext } from '../components/context/RepoSync'
 const host = import.meta.env.VITE_DOMAIN
 const Report = () => {
+    const [repo,setRepo] = useState<any>(null)
     const params = useParams();
-
     const id = params.id;
     const [report, setReport] = useState<any>([])
+    const getRepo = ()=>{
+       fetch(`${host}/repo/${id}`)
+       .then((res) => res.json)
+       .then((data)=>{
+        setRepo(data)
+       })
+    }
     const getDepTest = () => {
         fetch(`${host}/get-analysis`)
             .then(res => res.json())
@@ -31,6 +40,7 @@ const Report = () => {
     }
     useEffect(() => {
         getDepTest();
+        getRepo()
     }, [])
 
     return (
