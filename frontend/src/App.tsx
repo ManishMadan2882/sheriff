@@ -50,12 +50,12 @@ export default function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Landing/>}/>
-                {profile && profile.success && <div className="max-w-6xl">
+                {profile && profile.success && <>
                   <Route path="/dashboard" element={<Dashboard profile={profile} />} />
                   <Route path="/import" element={<ImportTable repos={repos} />} />
                   <Route path="/stats" element={<Stats />} />
                   <Route path="/report/:id" element={<Report />} />
-                </div>}
+                </>}
               </Routes>
             </BrowserRouter>
           </div>

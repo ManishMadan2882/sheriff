@@ -2,11 +2,13 @@ import React from 'react'
 import GitRepos from '../components/GitRepos'
 import Profile from '../components/Profile'
 
-const Dashboard = ({profile}:{profile:any}) => {
+const Dashboard = ({ profile }: { profile: any }) => {
     return (
-        <div>
-            <Profile profile={profile}/>
-            <GitRepos/>
+        <div className='flex justify-center mt-8'>
+            <div className='max-w-7xl'>
+                <Profile profile={profile} />
+                <GitRepos />
+            </div>
         </div>
     )
 }

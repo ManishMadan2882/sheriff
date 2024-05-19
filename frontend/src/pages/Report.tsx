@@ -59,74 +59,76 @@ const Report = () => {
     }, [])
 
     return (
-        <div className='min-w-max space-grotesk'>
+        <div className='flex justify-center mt-8'>
+            <div className='min-w-max space-grotesk'>
 
-            <div className='flex justify-center rounded-md shadow-md w-full metallic-gradient p-[2px]'>
-                <div className=' rounded-md p-4 w-full bg-chinese-black'>
-                    <div className='flex justify-start w-full items-center gap-6'>
-                        <img className='w-12 filter invert py-2' src={branch} />
-                        <div className='flex text-white flex-col w-full p-2'>
-                            {repo && <h1 className='text-2xl'>{sliceFromSecondLastSlash(repo?.url)}</h1>}
-                            <div className='flex justify-start gap-12 my-4'>
-                                <div>
-                                    <span className='text-silver'>Forks:{' '}</span>
-                                    <a href='github.com/manishmadan2882' className='hover:text-blue-500'>
-                                        5
-                                        {/* <img src={''} alt='visit' className='inline ml-1' width={16} /> */}
-                                    </a>
+                <div className='flex justify-center rounded-md shadow-md w-full metallic-gradient p-[2px]'>
+                    <div className=' rounded-md p-4 w-full bg-chinese-black'>
+                        <div className='flex justify-start w-full items-center gap-6'>
+                            <img className='w-12 filter invert py-2' src={branch} />
+                            <div className='flex text-white flex-col w-full p-2'>
+                                {repo && <h1 className='text-2xl'>{sliceFromSecondLastSlash(repo?.url)}</h1>}
+                                <div className='flex justify-start gap-12 my-4'>
+                                    <div>
+                                        <span className='text-silver'>Forks:{' '}</span>
+                                        <a href='github.com/manishmadan2882' className='hover:text-blue-500'>
+                                            5
+                                            {/* <img src={''} alt='visit' className='inline ml-1' width={16} /> */}
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <span className='text-silver'>Created :{' '}</span>
+                                        <span>Nov 28, 2021</span>
+                                    </div>
+                                    <div>
+                                        <span className='text-silver'>Forks:{' '}</span>
+                                        <span>38</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span className='text-silver'>Created :{' '}</span>
-                                    <span>Nov 28, 2021</span>
-                                </div>
-                                <div>
-                                    <span className='text-silver'>Forks:{' '}</span>
-                                    <span>38</span>
-                                </div>
+
                             </div>
 
                         </div>
-
                     </div>
                 </div>
-            </div>
-            <div className='text-silver mt-4 flex justify-between'>
-                <h1>Static Code Analysis</h1>
-                <h1>Report</h1>
-            </div>
-            <hr className='border-gun-metal my-6' />
+                <div className='text-silver mt-4 flex justify-between'>
+                    <h1>Static Code Analysis</h1>
+                    <h1>Report</h1>
+                </div>
+                <hr className='border-gun-metal my-6' />
 
-            {!success ?
-                <div className='bg-chinese-black p-4  flex justify-start text-silver'>
-                    <img src={warn} className='inline mr-4 w-8 h-8  bg-cadmium-orange rounded-3xl' />
-                    <div >
-                        <p>Run the Dependency analysis </p>
-                        <span className='text-xl text-cadmium-orange'>Report not found</span>
-                    </div>
-                </div> :
-                report?.length > 0 ? report?.map((elem: { key: string, val: string[] }, key: number) => {
-                    return (<>
-                        <div className='bg-chinese-black p-4 flex justify-start text-silver my-2'>
-                            <img src={cross} className='inline mr-4 w-8' />
+                {!success ?
+                    <div className='bg-chinese-black p-4  flex justify-start text-silver'>
+                        <img src={warn} className='inline mr-4 w-8 h-8  bg-cadmium-orange rounded-3xl' />
+                        <div >
+                            <p>Run the Dependency analysis </p>
+                            <span className='text-xl text-cadmium-orange'>Report not found</span>
+                        </div>
+                    </div> :
+                    report?.length > 0 ? report?.map((elem: { key: string, val: string[] }, key: number) => {
+                        return (<>
+                            <div className='bg-chinese-black p-4 flex justify-start text-silver my-2'>
+                                <img src={cross} className='inline mr-4 w-8' />
+                                <div >
+                                    <p>{elem.key}</p>
+                                    {
+                                        elem.val?.map((child: string) => {
+                                            return <span className='text-xl text-cyan-600'>{child}</span>
+                                        })
+                                    }
+                                </div>
+                            </div>
+                        </>)
+                    })
+                        : <div className='bg-chinese-black p-4  flex justify-start text-silver'>
+                            <img src={checkmark} className='inline mr-4 w-8' />
                             <div >
-                                <p>{elem.key}</p>
-                                {
-                                    elem.val?.map((child: string) => {
-                                        return <span className='text-xl text-cyan-600'>{child}</span>
-                                    })
-                                }
+                                <p>All Checks successfully passed !</p>
+                                <span className='text-xl text-cyan-600'>No vulnerability detected</span>
                             </div>
                         </div>
-                    </>)
-                })
-                    : <div className='bg-chinese-black p-4  flex justify-start text-silver'>
-                        <img src={checkmark} className='inline mr-4 w-8' />
-                        <div >
-                            <p>All Checks successfully passed !</p>
-                            <span className='text-xl text-cyan-600'>No vulnerability detected</span>
-                        </div>
-                    </div>
-            }
+                }
+            </div>
         </div>
     )
 }

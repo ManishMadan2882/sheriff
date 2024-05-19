@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const host = import.meta.env.VITE_DOMAIN
 const Import = ({ repos }: any) => {
-    const navigate =useNavigate()
+    const navigate = useNavigate()
     const importRepoOnServer = (repoUrl: string) => {
         console.log(repoUrl);
 
@@ -16,11 +16,11 @@ const Import = ({ repos }: any) => {
                 "Content-type": "application/json; charset=UTF-8"
             },
             body: JSON.stringify({
-                repoUrl: repoUrl+'.git'
+                repoUrl: repoUrl + '.git'
             })
         }).then(res => res.json())
             .then((data) => {
-                if (data.success){
+                if (data.success) {
                     toast.success("Repository linked successfully!");
                     navigate('/dashboard')
                 }
@@ -32,9 +32,11 @@ const Import = ({ repos }: any) => {
             })
     }
     return (
-        <div>
-            <ImportTable repos={repos} importRepo={importRepoOnServer} />
-            <ToastContainer />
+        <div className='flex justify-center'>
+            <div>
+                <ImportTable repos={repos} importRepo={importRepoOnServer} />
+                <ToastContainer />
+            </div>
         </div>
     )
 }

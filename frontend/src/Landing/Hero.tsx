@@ -1,5 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router';
 const Hero = () => {
+  const navigate = useNavigate()
   return (
     <div className="mt-14 mb-24 flex justify-center" id="lexeu-hero">
       <div className="metallic-gradient w-full rounded-2xl p-0.5 md:w-[695px] 2xl:w-[40vw]">
@@ -15,6 +17,7 @@ const Hero = () => {
           </p>
           <div className="mt-4 flex justify-center">
             <button
+              onClick={()=> navigate('/dashboard')}
               id="start-now-btn"
               className="flex justify-center rounded-xl bg-gradient-to-r from-purple-X11 to-ultramarine-blue px-4 py-3 font-outfit text-chinese-white"
             >
